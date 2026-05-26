@@ -3,6 +3,8 @@ export type SeedQuestion = {
   text: string;
   options: string[];
   optionExplanations: string[];
+  difficulty?: number;
+  sortOrder?: number;
   correctIndex: number;
   explanation: string;
 };
