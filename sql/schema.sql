@@ -1,9 +1,16 @@
-﻿CREATE TABLE users (
+CREATE TABLE users (
   id INTEGER PRIMARY KEY,
   telegram_id INTEGER UNIQUE NOT NULL,
   username TEXT,
   first_name TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE web_clients (
+  client_id TEXT PRIMARY KEY,
+  user_id INTEGER UNIQUE NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE questions (
@@ -57,6 +64,15 @@ CREATE TABLE topic_weights (
   topic TEXT NOT NULL,
   weight INTEGER NOT NULL DEFAULT 0,
   UNIQUE(user_id, topic),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE user_state (
+  user_id INTEGER PRIMARY KEY,
+  mode TEXT NOT NULL,
+  current_question_id INTEGER,
+  current_mode TEXT,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

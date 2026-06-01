@@ -2,12 +2,14 @@
   "name": "frontend-interview-bot-mvp",
   "version": "1.0.0",
   "private": true,
-  "description": "MVP Telegram bot for HTML/CSS interview prep",
-  "main": "dist/bot.js",
+  "description": "MVP web trainer for HTML/CSS/JS interview prep",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/bot.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/bot.ts",
+    "start": "node dist/server.js",
+    "start:bot": "node dist/bot.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev:bot": "ts-node-dev --respawn --transpile-only src/bot.ts",
     "migrate": "ts-node src/storage/migrate.ts"
   },
   "dependencies": {

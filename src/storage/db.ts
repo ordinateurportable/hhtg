@@ -107,6 +107,13 @@ CREATE TABLE IF NOT EXISTS interview_sessions (
   finished_at TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS web_clients (
+  client_id TEXT PRIMARY KEY,
+  user_id INTEGER UNIQUE NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
 `);
 
 const questionColumns = db.prepare("PRAGMA table_info(questions)").all() as Array<{ name: string }>;

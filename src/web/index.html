@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frontend Interview Trainer</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">HTML CSS JS</p>
+          <h1>Тренажер собеседований</h1>
+        </div>
+        <button id="refreshProgress" class="ghost">Обновить</button>
+      </section>
+
+      <section class="layout">
+        <aside class="panel">
+          <h2>Режим</h2>
+          <div class="mode-grid">
+            <button data-mode="regular" class="mode active">Общий</button>
+            <button data-mode="topic_html" class="mode">HTML</button>
+            <button data-mode="topic_css" class="mode">CSS</button>
+            <button data-mode="topic_js" class="mode">JS</button>
+            <button data-mode="mistakes" class="mode">Ошибки</button>
+            <button id="startInterview" class="mode">Интервью</button>
+          </div>
+
+          <h2>Прогресс</h2>
+          <div id="progress" class="progress muted">Загрузка...</div>
+        </aside>
+
+        <section class="workspace">
+          <div class="question-card">
+            <div id="questionMeta" class="meta">Выбери режим и начни тренировку</div>
+            <h2 id="questionText">Готовы?</h2>
+            <div id="options" class="options"></div>
+            <div id="result" class="result hidden"></div>
+            <button id="nextQuestion" class="primary">Следующий вопрос</button>
+          </div>
+
+          <div class="vacancy-card">
+            <div>
+              <h2>Вакансия</h2>
+              <p>Вставь требования, чтобы тренировка учитывала нужные темы.</p>
+            </div>
+            <textarea id="vacancyText" rows="6" placeholder="HTML, CSS, Grid, JavaScript, формы..."></textarea>
+            <button id="saveVacancy" class="secondary">Добавить вакансию</button>
+            <div id="vacancyResult" class="result hidden"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
