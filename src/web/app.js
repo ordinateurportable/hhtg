@@ -129,30 +129,93 @@ async function saveVacancy() {
   });
 
   els.vacancyResult.className = "result";
-  els.vacancyResult.textContent = `Вакансия сохранена.\nКлючевые слова: ${data.keywords.join(", ") || "нет"}\nТемы: ${data.topicLabels.join(", ") || "нет"}`;
+  els.vacancyResult.textContent = `Текст сохранен.\nКлючевые слова: ${data.keywords.join(", ") || "нет"}\nТемы: ${data.topicLabels.join(", ") || "нет"}`;
   els.vacancyText.value = "";
   await loadProgress();
 }
 
 async function loadProgress() {
   const progress = await api(`/api/progress?clientId=${state.clientId}`);
+  const goalPercent = percent(progress.todaySolved, progress.dailyGoal);
   const topics = progress.topics.length
-    ? progress.topics.map((topic) => `${topic.topicLabel}: ${topic.answered}/${topic.total}`).join("<br>")
-    : "Пока нет";
+    ? progress.topics.map(renderTopicProgress).join("")
+    : `<div class="empty-state">Пока нет пройденных тем</div>`;
   const weak = progress.weakTopics.length
-    ? progress.weakTopics.map((topic) => `${topic.topicLabel}: ${topic.wrongAnswers}`).join("<br>")
-    : "Пока нет";
+    ? progress.weakTopics.map(renderWeakTopic).join("")
+    : `<div class="empty-state">Слабых тем пока нет</div>`;
 
   els.progress.innerHTML = `
-    <div><strong>Сегодня:</strong> ${Math.min(progress.todaySolved, progress.dailyGoal)}/${progress.dailyGoal}</div>
-    <div><strong>Дней подряд:</strong> ${progress.streak}</div>
-    <div><strong>Точность:</strong> ${progress.accuracy}%</div>
-    <div><strong>Повторы:</strong> ${progress.dueToday}</div>
-    <div><strong>Ошибки:</strong> ${progress.activeMistakes}</div>
-    <div><strong>Что дальше:</strong> ${escapeHtml(progress.recommendation)}</div>
-    <div><strong>Слабые темы:</strong><br>${weak}</div>
-    <div><strong>Пройдено:</strong><br>${topics}</div>
+    <div class="progress-hero">
+      <div class="ring" style="--value:${progress.accuracy}">
+        <span>${progress.accuracy}%</span>
+      </div>
+      <div>
+        <div class="progress-title">Точность</div>
+        <div class="progress-note">${escapeHtml(progress.recommendation)}</div>
+      </div>
+    </div>
+
+    <div class="metric-grid">
+      ${renderMetric("Сегодня", `${Math.min(progress.todaySolved, progress.dailyGoal)}/${progress.dailyGoal}`)}
+      ${renderMetric("Дней подряд", progress.streak)}
+      ${renderMetric("Повторы", progress.dueToday)}
+      ${renderMetric("Ошибки", progress.activeMistakes)}
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-row">
+        <span>Дневная цель</span>
+        <strong>${goalPercent}%</strong>
+      </div>
+      <div class="bar"><span style="width:${goalPercent}%"></span></div>
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-heading">Слабые темы</div>
+      <div class="topic-list">${weak}</div>
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-heading">Пройденные темы</div>
+      <div class="topic-list">${topics}</div>
+    </div>
   `;
+}
+
+function renderMetric(label, value) {
+  return `
+    <div class="metric">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </div>
+  `;
+}
+
+function renderTopicProgress(topic) {
+  const value = percent(topic.answered, topic.total);
+  return `
+    <div class="topic-progress">
+      <div class="progress-row">
+        <span>${escapeHtml(topic.topicLabel)}</span>
+        <strong>${topic.answered}/${topic.total}</strong>
+      </div>
+      <div class="bar"><span style="width:${value}%"></span></div>
+    </div>
+  `;
+}
+
+function renderWeakTopic(topic) {
+  return `
+    <div class="weak-topic">
+      <span>${escapeHtml(topic.topicLabel)}</span>
+      <strong>${topic.wrongAnswers}</strong>
+    </div>
+  `;
+}
+
+function percent(value, total) {
+  if (!total) return 0;
+  return Math.min(100, Math.round((value / total) * 100));
 }
 
 function clearResult() {

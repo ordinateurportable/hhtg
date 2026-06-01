@@ -5,7 +5,7 @@ import { TOPIC_LABELS } from "../utils/constants";
 
 export async function promptVacancy(ctx: Context, userId: number) {
   setUserState(userId, "await_vacancy", null, null);
-  await ctx.reply("Пришли текст требований вакансии одним сообщением.");
+  await ctx.reply("Пришли требования вакансии или краткое саммари урока одним сообщением.");
 }
 
 export async function handleVacancyText(ctx: Context, userId: number, text: string) {
@@ -18,5 +18,5 @@ export async function handleVacancyText(ctx: Context, userId: number, text: stri
 
   const keywords = result.keywords.length ? result.keywords.join(", ") : "Нет совпадений";
 
-  await ctx.reply(`Вакансия сохранена.\nКлючевые слова: ${keywords}\nТемы: ${topics}`);
+  await ctx.reply(`Текст сохранен.\nКлючевые слова: ${keywords}\nТемы: ${topics}`);
 }

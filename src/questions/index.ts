@@ -17,47 +17,47 @@ export const seedQuestions: SeedQuestion[] = [
     optionExplanations: [
       "<div> нейтральный контейнер без смысла.",
       "<nav> явно обозначает блок навигации.",
-      "<section> подходит для смыслового раздела, не для навигации.",
-      "<header> может содержать навигацию, но сам не описывает меню."
+      "<section> описывает смысловой раздел.",
+      "<header> может содержать меню, но не является меню сам по себе."
     ],
     correctIndex: 1,
-    explanation: "<nav> используется для блоков навигационных ссылок."
+    explanation: "<nav> используют для основных навигационных ссылок."
   },
   {
     topic: "forms",
     text: "Какой атрибут делает поле формы обязательным?",
     options: ["validate", "required", "must", "need"],
     optionExplanations: [
-      "validate не является HTML-атрибутом для обязательности.",
-      "required включает встроенную проверку обязательного поля.",
-      "must не используется браузером как валидатор.",
-      "need не является стандартным HTML-атрибутом."
+      "validate не делает поле обязательным.",
+      "required включает встроенную проверку обязательности.",
+      "must не является HTML-атрибутом.",
+      "need не является HTML-атрибутом."
     ],
     correctIndex: 1,
-    explanation: "Атрибут required не дает отправить форму без заполнения поля."
+    explanation: "required не дает отправить форму без заполнения поля."
   },
   {
     topic: "attributes",
     text: "Для чего нужен атрибут alt у <img>?",
-    options: ["Стилизация", "Запасной текст", "Ленивая загрузка", "Ширина картинки"],
+    options: ["Для стилей", "Для текстового описания", "Для lazy loading", "Для ширины"],
     optionExplanations: [
-      "Стили задаются CSS или атрибутом style, но не alt.",
-      "alt дает текстовое описание изображения.",
-      "Ленивая загрузка задается loading=\"lazy\".",
-      "Размер задают width/height или CSS."
+      "Стили задаются CSS.",
+      "alt описывает изображение текстом.",
+      "Lazy loading задается loading=\"lazy\".",
+      "Ширина задается width или CSS."
     ],
     correctIndex: 1,
-    explanation: "alt описывает изображение для доступности и если картинка не загрузилась."
+    explanation: "alt важен для доступности и случая, когда картинка не загрузилась."
   },
   {
     topic: "block_inline",
     text: "Какой элемент по умолчанию строчный?",
     options: ["<div>", "<p>", "<span>", "<section>"],
     optionExplanations: [
-      "<div> по умолчанию блочный.",
-      "<p> по умолчанию блочный абзац.",
-      "<span> по умолчанию строчный.",
-      "<section> по умолчанию блочный смысловой раздел."
+      "<div> блочный.",
+      "<p> блочный.",
+      "<span> строчный.",
+      "<section> блочный."
     ],
     correctIndex: 2,
     explanation: "<span> по умолчанию inline."
@@ -67,88 +67,88 @@ export const seedQuestions: SeedQuestion[] = [
     text: "Как выбрать все элементы с классом card?",
     options: ["#card", ".card", "card", "*card"],
     optionExplanations: [
-      "#card выбирает элемент с id=\"card\".",
-      ".card выбирает элементы с class=\"card\".",
-      "card выбирает тег <card>, если такой есть.",
-      "*card не является корректным селектором класса."
+      "#card выбирает id.",
+      ".card выбирает class.",
+      "card выбирает тег <card>.",
+      "*card некорректен для класса."
     ],
     correctIndex: 1,
-    explanation: "Точка перед именем обозначает CSS-класс."
+    explanation: "CSS-класс выбирается через точку."
   },
   {
     topic: "specificity",
     text: "Что имеет более высокую специфичность?",
     options: [".menu a", "header a", "#menu a", "a"],
     optionExplanations: [
-      ".menu a содержит класс и тег.",
-      "header a содержит только теги.",
-      "#menu a содержит id, поэтому сильнее остальных.",
-      "a содержит только один тег."
+      "Класс + тег слабее id.",
+      "Два тега слабее класса и id.",
+      "id дает самый высокий вес среди вариантов.",
+      "Один тег самый слабый."
     ],
     correctIndex: 2,
-    explanation: "Селектор с id (#menu) приоритетнее класса и тега."
+    explanation: "Селектор с id приоритетнее классов и тегов."
   },
   {
     topic: "box_model",
     text: "Что входит в CSS box model?",
     options: ["content, padding, border, margin", "font, line-height", "display и position", "только width/height"],
     optionExplanations: [
-      "Это полный набор частей блочной модели.",
-      "Шрифт и line-height влияют на текст, но не описывают box model.",
-      "display и position управляют раскладкой и позиционированием.",
-      "width/height задают только размер content box."
+      "Это полный набор частей box model.",
+      "Это свойства текста.",
+      "Это свойства раскладки.",
+      "Это только размер content box."
     ],
     correctIndex: 0,
-    explanation: "Блочная модель: content -> padding -> border -> margin."
+    explanation: "Блочная модель: content, padding, border, margin."
   },
   {
     topic: "flexbox",
-    text: "Как по горизонтали центрировать элементы во flex-контейнере?",
-    options: ["align-items: center", "justify-content: center", "text-align: center", "margin: auto"],
+    text: "Как по главной оси центрировать элементы во flex-контейнере?",
+    options: ["align-items: center", "justify-content: center", "text-align: center", "position: center"],
     optionExplanations: [
-      "align-items центрирует по поперечной оси.",
-      "justify-content центрирует по главной оси.",
-      "text-align центрирует текст и inline-содержимое, не flex-элементы.",
-      "margin: auto может помочь отдельному элементу, но не группе."
+      "align-items работает по поперечной оси.",
+      "justify-content работает по главной оси.",
+      "text-align центрирует текст.",
+      "position: center не существует."
     ],
     correctIndex: 1,
-    explanation: "По главной оси flex используется justify-content."
+    explanation: "Во flex главная ось управляется justify-content."
   },
   {
     topic: "grid",
-    text: "Как включить CSS Grid для контейнера?",
+    text: "Как включить CSS Grid?",
     options: ["display: grid", "grid: true", "layout: grid", "position: grid"],
     optionExplanations: [
       "display: grid включает grid-контекст.",
-      "grid: true не является CSS-свойством для включения grid.",
-      "layout: grid не существует в CSS.",
-      "position управляет позиционированием, не grid."
+      "Такого свойства нет.",
+      "Такого свойства нет.",
+      "position не включает grid."
     ],
     correctIndex: 0,
-    explanation: "Grid активируется через display: grid."
+    explanation: "Grid включается через display: grid."
   },
   {
     topic: "position",
     text: "Какой position фиксирует элемент относительно окна браузера?",
     options: ["absolute", "relative", "sticky", "fixed"],
     optionExplanations: [
-      "absolute позиционируется относительно ближайшего positioned-предка.",
-      "relative смещает элемент относительно его обычного места.",
-      "sticky ведет себя как relative, пока не достигнет порога.",
-      "fixed фиксирует элемент относительно viewport."
+      "absolute зависит от positioned-предка.",
+      "relative смещает относительно обычного места.",
+      "sticky прилипает после порога.",
+      "fixed привязан к viewport."
     ],
     correctIndex: 3,
-    explanation: "fixed привязывает элемент к viewport."
+    explanation: "position: fixed фиксирует элемент относительно viewport."
   },
   {
     topic: "responsive",
     text: "Что чаще используют для адаптивной ширины блоков?",
     options: ["px", "%", "pt", "cm"],
     optionExplanations: [
-      "px фиксирует размер и хуже адаптируется.",
-      "% зависит от размера родителя.",
-      "pt больше относится к печати.",
-      "cm редко используют для экранной верстки."
+      "px фиксирует размер.",
+      "% зависит от родителя.",
+      "pt больше для печати.",
+      "cm редко используют в вебе."
     ],
     correctIndex: 1,
     explanation: "Проценты помогают блоку подстраиваться под родителя."
@@ -158,155 +158,267 @@ export const seedQuestions: SeedQuestion[] = [
     text: "Какой синтаксис media query корректный?",
     options: ["@media width < 768", "@media (max-width: 768px)", "@query (768)", "@media-device"],
     optionExplanations: [
-      "Такой синтаксис не является базовым CSS media query.",
-      "@media (max-width: 768px) корректно задает условие ширины.",
-      "@query не является правилом CSS для media queries.",
-      "@media-device не является стандартным at-rule."
+      "Некорректный базовый синтаксис.",
+      "Корректное условие max-width.",
+      "@query не является media query.",
+      "@media-device не существует."
     ],
     correctIndex: 1,
-    explanation: "Стандартный синтаксис: @media (max-width: 768px)."
+    explanation: "Базовая запись: @media (max-width: 768px)."
   },
   {
     topic: "pseudo",
-    text: "Какой селектор применится при наведении курсора?",
+    text: "Какой селектор сработает при наведении?",
     options: [":hover", "::after", ":focus-visible-only", "::hover"],
     optionExplanations: [
-      ":hover срабатывает при наведении.",
-      "::after создает псевдоэлемент после содержимого.",
-      ":focus-visible-only не является стандартным селектором.",
-      "::hover неверен: hover - псевдокласс, а не псевдоэлемент."
+      ":hover описывает наведение.",
+      "::after создает псевдоэлемент.",
+      "Такого стандартного селектора нет.",
+      "hover - псевдокласс, не псевдоэлемент."
     ],
     correctIndex: 0,
-    explanation: ":hover - псевдокласс состояния наведения."
+    explanation: ":hover применяется при наведении курсора."
   },
   {
     topic: "cascade",
-    text: "Что произойдет, если два одинаковых селектора задают один стиль?",
-    options: ["Всегда побеждает первый", "Стили смешиваются случайно", "Побеждает более позднее правило", "Стили игнорируются"],
+    text: "Если два одинаковых селектора задают один стиль, что победит?",
+    options: ["Первый", "Случайный", "Более поздний", "Ни один"],
     optionExplanations: [
-      "Первый проиграет, если специфичность равна и второе правило ниже.",
-      "CSS применяет строгие правила каскада, не случайность.",
-      "При равной специфичности побеждает правило ниже в коде.",
-      "Правила не игнорируются, браузер выбирает победителя каскада."
+      "Первый проиграет более позднему.",
+      "CSS не выбирает случайно.",
+      "При равной специфичности побеждает правило ниже.",
+      "Одно из правил будет применено."
     ],
     correctIndex: 2,
-    explanation: "При равной специфичности работает правило, объявленное позже."
+    explanation: "При равной специфичности работает более позднее правило."
   },
   {
     topic: "units",
-    text: "Какая единица зависит от размера шрифта родителя?",
+    text: "Какая единица зависит от размера шрифта текущего контекста?",
     options: ["rem", "px", "em", "vh"],
     optionExplanations: [
-      "rem зависит от font-size корневого элемента.",
-      "px является абсолютной экранной единицей.",
-      "em зависит от размера шрифта контекста.",
+      "rem зависит от root font-size.",
+      "px абсолютная единица.",
+      "em зависит от font-size контекста.",
       "vh зависит от высоты viewport."
     ],
     correctIndex: 2,
-    explanation: "em зависит от font-size текущего или родительского контекста."
+    explanation: "em считается от font-size текущего элемента или контекста."
   },
   {
     topic: "js_variables",
     text: "Чем let отличается от const?",
-    options: ["let нельзя менять", "const нельзя переназначить", "const всегда делает объект неизменяемым", "Разницы нет"],
-    optionExplanations: [
-      "let как раз можно переназначать.",
-      "const запрещает переназначение переменной.",
-      "const не замораживает объект, его поля можно менять.",
-      "Разница есть: let изменяемая привязка, const нет."
-    ],
+    options: ["let нельзя менять", "const нельзя переназначить", "const замораживает объект", "Разницы нет"],
+    optionExplanations: ["let можно переназначать.", "const запрещает новое присваивание.", "Поля объекта менять можно.", "Разница есть."],
     correctIndex: 1,
-    explanation: "const защищает от повторного присваивания, но не делает значение глубоко неизменяемым."
+    explanation: "const фиксирует привязку переменной, но не делает объект глубоко неизменяемым."
   },
   {
     topic: "js_types",
     text: "Что вернет typeof null?",
     options: ["null", "object", "undefined", "boolean"],
-    optionExplanations: [
-      "typeof null не возвращает строку \"null\".",
-      "Это историческая особенность JavaScript.",
-      "undefined будет только для undefined.",
-      "boolean возвращается для true/false."
-    ],
+    optionExplanations: ["typeof null не возвращает строку null.", "Это историческая особенность JS.", "undefined будет для undefined.", "boolean будет для true/false."],
     correctIndex: 1,
-    explanation: "typeof null возвращает \"object\" из-за старой особенности языка."
+    explanation: "typeof null возвращает \"object\"."
+  },
+  {
+    topic: "js_conversion",
+    text: "Что получится при Number('')?",
+    options: ["0", "NaN", "undefined", "''"],
+    optionExplanations: ["Пустая строка при численном преобразовании становится 0.", "NaN будет для строки без числового смысла.", "undefined не результат Number('').", "Number возвращает число."],
+    correctIndex: 0,
+    explanation: "Number('') возвращает 0."
+  },
+  {
+    topic: "js_operators",
+    text: "Что вернет выражение '5' + 2?",
+    options: ["7", "'52'", "NaN", "Ошибка"],
+    optionExplanations: ["Сложение чисел не произойдет.", "С + и строкой будет конкатенация.", "NaN здесь не возникает.", "Это валидное выражение."],
+    correctIndex: 1,
+    explanation: "Оператор + со строкой приводит второй операнд к строке."
+  },
+  {
+    topic: "js_comparison",
+    text: "Чем === отличается от ==?",
+    options: ["Сравнивает без приведения типов", "Всегда быстрее", "Запрещен браузером", "Разницы нет"],
+    optionExplanations: ["Строгое равенство не приводит типы.", "Скорость не главное отличие.", "== валиден.", "Разница есть."],
+    correctIndex: 0,
+    explanation: "=== сравнивает значение и тип без неявного преобразования."
+  },
+  {
+    topic: "js_conditions",
+    text: "Какое значение считается falsy?",
+    options: ["'0'", "[]", "0", "{}"],
+    optionExplanations: ["Непустая строка truthy.", "Массив truthy.", "0 является falsy.", "Объект truthy."],
+    correctIndex: 2,
+    explanation: "0, '', null, undefined, NaN и false являются falsy."
+  },
+  {
+    topic: "js_logic",
+    text: "Что вернет true && 'hello'?",
+    options: ["true", "'hello'", "false", "undefined"],
+    optionExplanations: ["&& возвращает не обязательно boolean.", "&& возвращает последний truthy-операнд.", "false здесь нет.", "undefined здесь нет."],
+    correctIndex: 1,
+    explanation: "&& возвращает первое falsy значение или последнее, если все truthy."
+  },
+  {
+    topic: "js_loops",
+    text: "Как досрочно остановить цикл?",
+    options: ["stop", "break", "return false", "exit"],
+    optionExplanations: ["stop не оператор JS.", "break выходит из цикла.", "return выходит из функции.", "exit не оператор JS."],
+    correctIndex: 1,
+    explanation: "break завершает ближайший цикл или switch."
+  },
+  {
+    topic: "js_switch",
+    text: "Зачем обычно нужен break в switch?",
+    options: ["Чтобы не было fall-through", "Чтобы создать переменную", "Чтобы сравнивать строго", "Чтобы вернуть значение"],
+    optionExplanations: ["Без break выполнение пойдет в следующий case.", "Переменные создаются let/const.", "switch и так использует строгое сравнение.", "return работает только в функции."],
+    correctIndex: 0,
+    explanation: "break останавливает выполнение текущей ветки switch."
   },
   {
     topic: "js_functions",
-    text: "Что такое callback?",
-    options: ["Функция, переданная как аргумент", "Объект браузера", "Тип массива", "CSS-селектор"],
-    optionExplanations: [
-      "Callback передают другой функции для вызова позже.",
-      "Объект браузера не называют callback.",
-      "Массив не является callback.",
-      "CSS-селектор не связан с callback."
-    ],
+    text: "Что вернет функция без return?",
+    options: ["null", "0", "undefined", "false"],
+    optionExplanations: ["null надо вернуть явно.", "0 надо вернуть явно.", "Без return результат undefined.", "false надо вернуть явно."],
+    correctIndex: 2,
+    explanation: "Если return нет, функция возвращает undefined."
+  },
+  {
+    topic: "js_arrow_functions",
+    text: "Что особенного у стрелочной функции?",
+    options: ["Нет своего this", "Нельзя передавать аргументы", "Всегда async", "Всегда метод объекта"],
+    optionExplanations: ["this берется из внешней области.", "Аргументы передавать можно.", "async надо указать явно.", "Стрелка не обязана быть методом."],
     correctIndex: 0,
-    explanation: "Callback - это функция, которую вызывают внутри другой функции."
+    explanation: "Стрелочные функции не имеют собственного this."
+  },
+  {
+    topic: "js_scope",
+    text: "Какая область видимости у let?",
+    options: ["Функциональная", "Блочная", "Глобальная всегда", "Только файловая"],
+    optionExplanations: ["Это ближе к var.", "let виден внутри блока.", "let не всегда глобальный.", "Это не точное правило для обычного скрипта."],
+    correctIndex: 1,
+    explanation: "let и const имеют блочную область видимости."
+  },
+  {
+    topic: "js_hoisting",
+    text: "Что произойдет при обращении к let-переменной до объявления?",
+    options: ["undefined", "ReferenceError", "null", "0"],
+    optionExplanations: ["Так ведет себя var.", "До объявления let находится в TDZ.", "null не подставляется.", "0 не подставляется."],
+    correctIndex: 1,
+    explanation: "let/const находятся в temporal dead zone до строки объявления."
   },
   {
     topic: "js_arrays",
     text: "Какой метод создает новый массив без изменения исходного?",
     options: ["push", "pop", "map", "sort"],
-    optionExplanations: [
-      "push меняет исходный массив.",
-      "pop удаляет элемент из исходного массива.",
-      "map возвращает новый массив.",
-      "sort сортирует исходный массив."
-    ],
+    optionExplanations: ["push меняет исходный массив.", "pop меняет исходный массив.", "map возвращает новый массив.", "sort сортирует исходный массив."],
     correctIndex: 2,
-    explanation: "map проходит по массиву и возвращает новый массив результатов."
+    explanation: "map возвращает новый массив результатов."
   },
   {
     topic: "js_objects",
-    text: "Как получить значение поля name из объекта user?",
+    text: "Как получить поле name у объекта user?",
     options: ["user.name", "user->name", "user::name", "user#name"],
-    optionExplanations: [
-      "Точечная нотация user.name корректна.",
-      "user->name не используется в JavaScript.",
-      "user::name не является обычным доступом к свойству.",
-      "user#name не используется для свойств объекта."
-    ],
+    optionExplanations: ["Точечная нотация корректна.", "Такого синтаксиса в JS нет.", "Это не доступ к свойству.", "Это не доступ к обычному свойству."],
     correctIndex: 0,
-    explanation: "К свойствам объекта обычно обращаются через точку: user.name."
+    explanation: "К свойствам объекта обращаются через точку или квадратные скобки."
   },
   {
-    topic: "js_dom",
-    text: "Как выбрать элемент по id=\"app\"?",
-    options: ["document.querySelector('#app')", "document.getClass('app')", "window.select('#app')", "document.id('app')"],
-    optionExplanations: [
-      "querySelector принимает CSS-селектор, #app выбирает id.",
-      "getClass не является стандартным DOM-методом.",
-      "window.select не выбирает DOM-элементы.",
-      "document.id не является стандартным DOM-методом."
-    ],
+    topic: "js_this",
+    text: "Что обычно определяет значение this в обычной функции?",
+    options: ["Место объявления", "Способ вызова", "Имя функции", "Количество аргументов"],
+    optionExplanations: ["Для обычной функции важен вызов.", "this зависит от того, как вызвали функцию.", "Имя не задает this.", "Аргументы не задают this."],
+    correctIndex: 1,
+    explanation: "В обычных функциях this определяется способом вызова."
+  },
+  {
+    topic: "js_prototypes",
+    text: "Для чего нужен прототип объекта?",
+    options: ["Для поиска унаследованных свойств", "Для подключения CSS", "Для хранения HTML", "Для остановки цикла"],
+    optionExplanations: ["Свойства ищутся по цепочке прототипов.", "CSS не связан с прототипом.", "HTML не хранится в прототипе.", "Циклы останавливает break."],
     correctIndex: 0,
-    explanation: "document.querySelector('#app') вернет первый элемент с id app."
+    explanation: "Если свойства нет в объекте, JS ищет его в прототипной цепочке."
   },
   {
-    topic: "js_events",
-    text: "Как подписаться на клик по кнопке button?",
-    options: ["button.on('click')", "button.addEventListener('click', handler)", "button.click(handler)", "listen(button, click)"],
-    optionExplanations: [
-      "on('click') характерен для некоторых библиотек, не для DOM API.",
-      "addEventListener - стандартный способ подписки.",
-      "button.click() программно вызывает клик.",
-      "listen(button, click) не является стандартным DOM API."
-    ],
-    correctIndex: 1,
-    explanation: "В DOM события обычно слушают через addEventListener."
+    topic: "js_constructor_functions",
+    text: "Как обычно вызывают функцию-конструктор?",
+    options: ["С оператором new", "Через await", "Только как стрелочную функцию", "Через import"],
+    optionExplanations: ["new создает объект и привязывает this к нему.", "await ждет Promise, но не создает объект.", "Стрелочные функции не подходят для конструкторов.", "import подключает модули."],
+    correctIndex: 0,
+    explanation: "Функция-конструктор вызывается через new и обычно заполняет свойства через this."
   },
   {
-    topic: "js_async",
-    text: "Что делает await?",
-    options: ["Останавливает весь браузер", "Ждет результат Promise внутри async-функции", "Создает новый массив", "Удаляет обработчик события"],
-    optionExplanations: [
-      "await не блокирует весь браузер.",
-      "await ожидает выполнение Promise в async-функции.",
-      "Массивы создают литералом [] или конструкторами/методами.",
-      "Обработчики удаляют через removeEventListener."
-    ],
-    correctIndex: 1,
-    explanation: "await позволяет писать асинхронный код похожим на синхронный образом."
+    topic: "js_closures",
+    text: "Что такое замыкание?",
+    options: ["Функция с доступом к внешним переменным", "Закрытие вкладки браузера", "Ошибка синтаксиса", "Копия DOM-дерева"],
+    optionExplanations: ["Функция помнит переменные из внешней области.", "Это не связано с вкладками.", "Замыкание не является ошибкой.", "DOM не копируется автоматически."],
+    correctIndex: 0,
+    explanation: "Замыкание позволяет функции использовать переменные из области, где она была создана."
+  },
+  {
+    topic: "js_recursion",
+    text: "Что обязательно должно быть у рекурсивной функции?",
+    options: ["Базовый случай", "Только стрелочный синтаксис", "Метод map", "CSS-класс"],
+    optionExplanations: ["Базовый случай останавливает рекурсию.", "Синтаксис функции не важен.", "map не обязателен.", "CSS не связан с рекурсией."],
+    correctIndex: 0,
+    explanation: "Без базового случая рекурсия может уйти в бесконечные вызовы."
+  },
+  {
+    topic: "js_binary_search",
+    text: "Какое главное условие для бинарного поиска?",
+    options: ["Данные отсортированы", "Массив содержит только строки", "Нельзя использовать циклы", "Нужен DOM"],
+    optionExplanations: ["Бинарный поиск работает по отсортированным данным.", "Тип элементов не главное условие.", "Алгоритм можно написать и циклом, и рекурсией.", "DOM здесь не нужен."],
+    correctIndex: 0,
+    explanation: "Бинарный поиск каждый шаг отбрасывает половину диапазона, поэтому порядок данных критичен."
+  },
+  {
+    topic: "js_classes",
+    text: "Что такое class в JavaScript?",
+    options: ["Синтаксис поверх прототипов", "Новый примитив", "HTML-класс", "CSS-селектор"],
+    optionExplanations: ["class упрощает работу с конструкторами и прототипами.", "Нового примитива не появляется.", "Это не атрибут HTML.", "Это не CSS-селектор."],
+    correctIndex: 0,
+    explanation: "Классы в JS основаны на прототипном наследовании."
+  },
+  {
+    topic: "js_strings",
+    text: "Что делает шаблонная строка с ${}?",
+    options: ["Вставляет выражение в строку", "Создает массив", "Отключает Unicode", "Делает строку mutable"],
+    optionExplanations: ["${} интерполирует выражение.", "Массив не создается.", "Unicode не отключается.", "Строки остаются неизменяемыми."],
+    correctIndex: 0,
+    explanation: "Template literals позволяют вставлять выражения через ${...}."
+  },
+  {
+    topic: "js_errors",
+    text: "Для чего нужна конструкция try...catch?",
+    options: ["Для обработки ошибок", "Для создания функции", "Для цикла", "Для импорта CSS"],
+    optionExplanations: ["catch ловит исключение из try.", "Функции создаются function/=>.", "Циклы создаются for/while.", "CSS не импортируется через try."],
+    correctIndex: 0,
+    explanation: "try...catch позволяет обработать исключение."
+  },
+  {
+    topic: "js_builtin",
+    text: "Что вернет Math.floor(2.9)?",
+    options: ["2", "3", "2.9", "NaN"],
+    optionExplanations: ["floor округляет вниз.", "3 вернул бы ceil или round.", "Возвращается целое число.", "Число валидное."],
+    correctIndex: 0,
+    explanation: "Math.floor округляет число вниз до ближайшего целого."
+  },
+  {
+    topic: "js_collections",
+    text: "Чем Set отличается от массива?",
+    options: ["Хранит только уникальные значения", "Всегда сортирует", "Хранит только строки", "Не итерируется"],
+    optionExplanations: ["Set не хранит дубликаты.", "Set не сортирует автоматически.", "Set хранит разные типы.", "Set можно итерировать."],
+    correctIndex: 0,
+    explanation: "Set - коллекция уникальных значений."
+  },
+  {
+    topic: "js_collections",
+    text: "Для чего подходит Map?",
+    options: ["Для пар ключ-значение с любыми ключами", "Только для CSS", "Только для чисел", "Для остановки Promise"],
+    optionExplanations: ["Map хранит пары ключ-значение.", "CSS не связан с Map.", "Ключи и значения могут быть разных типов.", "Promise так не останавливают."],
+    correctIndex: 0,
+    explanation: "Map удобен, когда ключом может быть не только строка."
   }
 ];
