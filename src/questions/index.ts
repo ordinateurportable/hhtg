@@ -2,9 +2,12 @@ import { courseQuestions } from "./courseQuestions";
 
 export type SeedQuestion = {
   topic: string;
+  type?: "choice" | "text" | "order";
   text: string;
+  theory?: string;
   options: string[];
   optionExplanations: string[];
+  correctAnswers?: string[];
   difficulty?: number;
   sortOrder?: number;
   correctIndex: number;

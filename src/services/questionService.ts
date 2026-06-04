@@ -4,25 +4,39 @@ import { SeedQuestion, seedQuestions } from "../questions";
 type DbQuestion = {
   id: number;
   topic: string;
+  question_type: QuestionType;
   question_text: string;
+  theory: string | null;
   options_json: string;
   option_explanations_json: string | null;
+  correct_answers_json: string | null;
   difficulty: number;
   sort_order: number;
   correct_index: number;
   explanation: string;
 };
 
+export type QuestionType = "choice" | "text" | "order";
+
 export type Question = {
   id: number;
   topic: string;
+  type: QuestionType;
   text: string;
+  theory: string | null;
   options: string[];
   optionExplanations: string[];
+  correctAnswers: string[];
   difficulty: number;
   sortOrder: number;
   correctIndex: number;
   explanation: string;
+};
+
+export type AnswerPayload = {
+  selectedIndex?: number;
+  textAnswer?: string;
+  selectedOrder?: number[];
 };
 
 export type QuizMode =
@@ -43,6 +57,7 @@ export function seedQuestionsIfEmpty(): void {
     syncQuestionOptionExplanations();
     insertMissingQuestions();
     syncQuestionOrder();
+    syncQuestionExtraFields();
     return;
   }
 
@@ -51,8 +66,20 @@ export function seedQuestionsIfEmpty(): void {
 
 function insertQuestions(items: SeedQuestion[]): void {
   const stmt = db.prepare(`
-    INSERT INTO questions (topic, question_text, options_json, option_explanations_json, difficulty, sort_order, correct_index, explanation)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO questions (
+      topic,
+      question_type,
+      question_text,
+      theory,
+      options_json,
+      option_explanations_json,
+      correct_answers_json,
+      difficulty,
+      sort_order,
+      correct_index,
+      explanation
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const tx = db.transaction((questions: SeedQuestion[]) => {
@@ -60,9 +87,12 @@ function insertQuestions(items: SeedQuestion[]): void {
       const seedIndex = seedQuestions.findIndex((item) => item.text === q.text);
       stmt.run(
         q.topic,
+        q.type ?? "choice",
         q.text,
+        q.theory ?? null,
         JSON.stringify(q.options),
         JSON.stringify(q.optionExplanations),
+        JSON.stringify(q.correctAnswers ?? []),
         q.difficulty ?? difficultyForTopic(q.topic),
         q.sortOrder ?? seedIndex,
         q.correctIndex,
@@ -89,8 +119,11 @@ function syncSeedQuestionContent(): void {
   const updateByTopic = db.prepare(`
     UPDATE questions
     SET question_text = ?,
+        question_type = ?,
+        theory = ?,
         options_json = ?,
         option_explanations_json = ?,
+        correct_answers_json = ?,
         difficulty = ?,
         sort_order = ?,
         correct_index = ?,
@@ -107,8 +140,11 @@ function syncSeedQuestionContent(): void {
         const seedIndex = seedQuestions.findIndex((item) => item.text === q.text);
         updateByTopic.run(
           q.text,
+          q.type ?? "choice",
+          q.theory ?? null,
           JSON.stringify(q.options),
           JSON.stringify(q.optionExplanations),
+          JSON.stringify(q.correctAnswers ?? []),
           q.difficulty ?? difficultyForTopic(q.topic),
           q.sortOrder ?? seedIndex,
           q.correctIndex,
@@ -129,6 +165,24 @@ function syncQuestionOrder(): void {
     items.forEach((q, index) => {
       stmt.run(q.difficulty ?? difficultyForTopic(q.topic), q.sortOrder ?? index, q.text);
     });
+  });
+
+  tx(seedQuestions);
+}
+
+function syncQuestionExtraFields(): void {
+  const stmt = db.prepare(`
+    UPDATE questions
+    SET question_type = ?,
+        theory = ?,
+        correct_answers_json = ?
+    WHERE question_text = ?
+  `);
+
+  const tx = db.transaction((items: SeedQuestion[]) => {
+    for (const q of items) {
+      stmt.run(q.type ?? "choice", q.theory ?? null, JSON.stringify(q.correctAnswers ?? []), q.text);
+    }
   });
 
   tx(seedQuestions);
@@ -235,11 +289,16 @@ function toQuestion(row: DbQuestion): Question {
   return {
     id: row.id,
     topic: row.topic,
+    type: row.question_type ?? seed?.type ?? "choice",
     text: row.question_text,
+    theory: row.theory ?? seed?.theory ?? null,
     options: JSON.parse(row.options_json),
     optionExplanations: row.option_explanations_json
       ? JSON.parse(row.option_explanations_json)
       : seed?.optionExplanations ?? [],
+    correctAnswers: row.correct_answers_json
+      ? JSON.parse(row.correct_answers_json)
+      : seed?.correctAnswers ?? [],
     difficulty: row.difficulty,
     sortOrder: row.sort_order,
     correctIndex: row.correct_index,
@@ -420,13 +479,21 @@ function topicsForMode(mode: QuizMode): string[] | null {
   return null;
 }
 
-export function saveAnswer(userId: number, question: Question, selectedIndex: number, mode: QuizMode = "regular"): boolean {
-  const isCorrect = selectedIndex === question.correctIndex;
+export function saveAnswer(
+  userId: number,
+  question: Question,
+  answer: number | AnswerPayload,
+  mode: QuizMode = "regular"
+): boolean {
+  const payload: AnswerPayload = typeof answer === "number" ? { selectedIndex: answer } : answer;
+  const isCorrect = checkAnswer(question, payload);
+  const selectedIndex = payload.selectedIndex ?? -1;
+  const answerText = payload.textAnswer ?? (payload.selectedOrder ? JSON.stringify(payload.selectedOrder) : null);
 
   db.prepare(`
-    INSERT INTO answers (user_id, question_id, selected_index, is_correct)
-    VALUES (?, ?, ?, ?)
-  `).run(userId, question.id, selectedIndex, isCorrect ? 1 : 0);
+    INSERT INTO answers (user_id, question_id, selected_index, answer_text, is_correct)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(userId, question.id, selectedIndex, answerText, isCorrect ? 1 : 0);
 
   updateQuestionProgress(userId, question.id, isCorrect);
   if (mode === "interview") {
@@ -446,6 +513,24 @@ export function saveAnswer(userId: number, question: Question, selectedIndex: nu
   }
 
   return isCorrect;
+}
+
+function checkAnswer(question: Question, payload: AnswerPayload): boolean {
+  if (question.type === "text") {
+    const value = normalizeTextAnswer(payload.textAnswer ?? "");
+    return question.correctAnswers.some((answer) => normalizeTextAnswer(answer) === value);
+  }
+
+  if (question.type === "order") {
+    const expected = question.options.map((_, index) => index);
+    return JSON.stringify(payload.selectedOrder ?? []) === JSON.stringify(expected);
+  }
+
+  return payload.selectedIndex === question.correctIndex;
+}
+
+function normalizeTextAnswer(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 export function startInterview(userId: number, total = 10): void {
@@ -575,6 +660,24 @@ function intervalForBox(box: number): number {
 export function getQuestionById(questionId: number): Question | null {
   const row = db.prepare("SELECT * FROM questions WHERE id = ?").get(questionId) as DbQuestion | undefined;
   return row ? toQuestion(row) : null;
+}
+
+export function isQuestionMarked(userId: number, questionId: number): boolean {
+  const row = db.prepare("SELECT 1 FROM question_marks WHERE user_id = ? AND question_id = ?").get(userId, questionId);
+  return Boolean(row);
+}
+
+export function toggleQuestionMark(userId: number, questionId: number): boolean {
+  if (isQuestionMarked(userId, questionId)) {
+    db.prepare("DELETE FROM question_marks WHERE user_id = ? AND question_id = ?").run(userId, questionId);
+    return false;
+  }
+
+  db.prepare(`
+    INSERT INTO question_marks (user_id, question_id, mark)
+    VALUES (?, ?, 'saved')
+  `).run(userId, questionId);
+  return true;
 }
 
 export function getMistakesCount(userId: number): number {

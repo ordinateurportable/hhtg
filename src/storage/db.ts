@@ -23,8 +23,11 @@ CREATE TABLE IF NOT EXISTS questions (
   id INTEGER PRIMARY KEY,
   topic TEXT NOT NULL,
   question_text TEXT NOT NULL,
+  question_type TEXT NOT NULL DEFAULT 'choice',
+  theory TEXT,
   options_json TEXT NOT NULL,
   option_explanations_json TEXT,
+  correct_answers_json TEXT,
   difficulty INTEGER NOT NULL DEFAULT 1,
   sort_order INTEGER NOT NULL DEFAULT 0,
   correct_index INTEGER NOT NULL,
@@ -36,6 +39,7 @@ CREATE TABLE IF NOT EXISTS answers (
   user_id INTEGER NOT NULL,
   question_id INTEGER NOT NULL,
   selected_index INTEGER NOT NULL,
+  answer_text TEXT,
   is_correct INTEGER NOT NULL,
   answered_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -114,6 +118,30 @@ CREATE TABLE IF NOT EXISTS web_clients (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS web_client_links (
+  client_id TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS account_codes (
+  code TEXT PRIMARY KEY,
+  user_id INTEGER UNIQUE NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS question_marks (
+  user_id INTEGER NOT NULL,
+  question_id INTEGER NOT NULL,
+  mark TEXT NOT NULL DEFAULT 'saved',
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (user_id, question_id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (question_id) REFERENCES questions(id)
+);
 `);
 
 const questionColumns = db.prepare("PRAGMA table_info(questions)").all() as Array<{ name: string }>;
@@ -126,3 +154,22 @@ if (!questionColumns.some((column) => column.name === "difficulty")) {
 if (!questionColumns.some((column) => column.name === "sort_order")) {
   db.prepare("ALTER TABLE questions ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0").run();
 }
+if (!questionColumns.some((column) => column.name === "question_type")) {
+  db.prepare("ALTER TABLE questions ADD COLUMN question_type TEXT NOT NULL DEFAULT 'choice'").run();
+}
+if (!questionColumns.some((column) => column.name === "theory")) {
+  db.prepare("ALTER TABLE questions ADD COLUMN theory TEXT").run();
+}
+if (!questionColumns.some((column) => column.name === "correct_answers_json")) {
+  db.prepare("ALTER TABLE questions ADD COLUMN correct_answers_json TEXT").run();
+}
+
+const answerColumns = db.prepare("PRAGMA table_info(answers)").all() as Array<{ name: string }>;
+if (!answerColumns.some((column) => column.name === "answer_text")) {
+  db.prepare("ALTER TABLE answers ADD COLUMN answer_text TEXT").run();
+}
+
+db.prepare(`
+  INSERT OR IGNORE INTO web_client_links (client_id, user_id, created_at)
+  SELECT client_id, user_id, created_at FROM web_clients
+`).run();

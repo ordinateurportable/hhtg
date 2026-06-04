@@ -27,7 +27,8 @@ body {
 }
 
 button,
-textarea {
+textarea,
+input {
   font: inherit;
 }
 
@@ -84,9 +85,12 @@ h2 {
 }
 
 .panel,
+.account-card,
 .question-card,
 .vacancy-card,
-.homework-card {
+.homework-card,
+.course-card,
+.completed-card {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 253, 247, 0.92);
@@ -97,6 +101,33 @@ h2 {
   position: sticky;
   top: 18px;
   padding: 18px;
+}
+
+.account-card {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 18px;
+}
+
+.account-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffaf0;
+  color: var(--ink);
+}
+
+input {
+  min-height: 42px;
+  padding: 0 12px;
 }
 
 .mode-grid {
@@ -142,7 +173,9 @@ h2 {
 
 .question-card,
 .vacancy-card,
-.homework-card {
+.homework-card,
+.course-card,
+.completed-card {
   padding: 22px;
 }
 
@@ -165,6 +198,42 @@ h2 {
   display: grid;
   gap: 10px;
   margin: 20px 0;
+}
+
+.theory-card {
+  padding: 14px;
+  border: 1px solid rgba(40, 92, 143, 0.22);
+  border-radius: 8px;
+  background: rgba(40, 92, 143, 0.08);
+  color: var(--blue);
+}
+
+.text-answer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.picked-order {
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(31, 122, 77, 0.1);
+  color: var(--green-dark);
+}
+
+.mark-button {
+  margin-left: 8px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: var(--blue);
+  font-size: 13px;
+}
+
+.mark-button.marked {
+  border-color: var(--green);
+  background: rgba(31, 122, 77, 0.12);
+  color: var(--green-dark);
 }
 
 .option {
@@ -351,6 +420,51 @@ textarea {
   color: var(--muted);
 }
 
+.course-map {
+  display: grid;
+  gap: 16px;
+}
+
+.course-module {
+  display: grid;
+  gap: 10px;
+}
+
+.course-module h3 {
+  margin: 0;
+}
+
+.course-items {
+  display: grid;
+  gap: 10px;
+}
+
+.course-item {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffaf0;
+}
+
+.course-item.done {
+  border-color: rgba(31, 122, 77, 0.35);
+  background: rgba(31, 122, 77, 0.08);
+}
+
+.course-item.active {
+  border-color: rgba(40, 92, 143, 0.35);
+}
+
+.course-item.locked {
+  opacity: 0.74;
+}
+
+.course-item small {
+  color: var(--muted);
+}
+
 .homework {
   display: grid;
   gap: 10px;
@@ -396,5 +510,10 @@ textarea {
   .topbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .account-row,
+  .text-answer {
+    grid-template-columns: 1fr;
   }
 }

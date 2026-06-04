@@ -3,11 +3,22 @@ import type { SeedQuestion } from ".";
 export const courseQuestions: SeedQuestion[] = [
   {
     topic: "git",
+    theory: "Git хранит историю проекта через коммиты. Перед коммитом полезно проверить рабочую директорию.",
     text: "Какая команда показывает текущее состояние репозитория?",
     options: ["git status", "git log", "git init", "git push"],
     optionExplanations: ["Показывает измененные, staged и untracked файлы.", "Показывает историю коммитов.", "Создает новый репозиторий.", "Отправляет коммиты на удаленный сервер."],
     correctIndex: 0,
     explanation: "git status — первая команда для проверки, что сейчас происходит в репозитории."
+  },
+  {
+    topic: "git",
+    type: "order",
+    theory: "Обычный путь изменения в Git: проверить статус, добавить файлы в индекс, создать коммит.",
+    text: "Расставь базовый порядок действий для первого коммита.",
+    options: ["git status", "git add .", "git commit -m \"init\""],
+    optionExplanations: ["Сначала смотрим состояние.", "Потом добавляем изменения.", "После этого фиксируем изменения коммитом."],
+    correctIndex: 0,
+    explanation: "Сначала проверяем состояние, затем добавляем файлы в индекс, потом создаем коммит."
   },
   {
     topic: "git",
@@ -24,6 +35,17 @@ export const courseQuestions: SeedQuestion[] = [
     optionExplanations: ["pull = fetch + merge/rebase.", "fetch не удаляет ветки.", "Историю показывает git log.", "Разница есть."],
     correctIndex: 0,
     explanation: "git fetch безопаснее для проверки обновлений, git pull сразу применяет их к рабочей ветке."
+  },
+  {
+    topic: "html_meta",
+    type: "text",
+    theory: "Метаинформация страницы лежит в head. Она не является основным видимым содержимым.",
+    text: "В каком теге обычно размещают <title>? Напиши только имя тега.",
+    options: [],
+    optionExplanations: [],
+    correctAnswers: ["head", "<head>"],
+    correctIndex: 0,
+    explanation: "<title> размещают внутри <head>."
   },
   {
     topic: "html_meta",
@@ -51,6 +73,7 @@ export const courseQuestions: SeedQuestion[] = [
   },
   {
     topic: "css_text",
+    theory: "Типографика влияет на читаемость не меньше цвета и сетки.",
     text: "Какое свойство задает межстрочный интервал?",
     options: ["line-height", "letter-spacing", "font-weight", "text-transform"],
     optionExplanations: ["line-height управляет высотой строки.", "letter-spacing меняет расстояние между буквами.", "font-weight задает насыщенность.", "text-transform меняет регистр."],
@@ -99,11 +122,32 @@ export const courseQuestions: SeedQuestion[] = [
   },
   {
     topic: "js_storage",
+    type: "text",
+    theory: "localStorage хранит строки в браузере и переживает перезагрузку страницы.",
+    text: "Какой Web API используют для долгого хранения простых данных в браузере?",
+    options: [],
+    optionExplanations: [],
+    correctAnswers: ["localstorage", "localStorage"],
+    correctIndex: 0,
+    explanation: "localStorage хранит данные в браузере между сессиями."
+  },
+  {
+    topic: "js_storage",
     text: "Где localStorage хранит данные?",
     options: ["В браузере пользователя", "В CSS-файле", "В Git-коммите", "Только в оперативной памяти до перезагрузки"],
     optionExplanations: ["localStorage сохраняет данные в браузере между сессиями.", "CSS не хранит данные приложения.", "Git не связан с браузерным storage.", "Это больше похоже на переменную или sessionStorage."],
     correctIndex: 0,
     explanation: "localStorage удобен для простых пользовательских настроек и черновиков."
+  },
+  {
+    topic: "js_modules",
+    type: "order",
+    theory: "ES-модули делают зависимости явными: один файл экспортирует, другой импортирует.",
+    text: "Расставь порядок использования функции из другого файла.",
+    options: ["export function helper() {}", "import { helper } from './helper.js'", "helper()"],
+    optionExplanations: ["Сначала функция экспортируется из модуля.", "Потом импортируется там, где нужна.", "После импорта ее можно вызвать."],
+    correctIndex: 0,
+    explanation: "Сначала экспорт, затем импорт, затем использование."
   },
   {
     topic: "js_modules",
@@ -128,6 +172,17 @@ export const courseQuestions: SeedQuestion[] = [
     optionExplanations: ["Компонент описывает UI через JSX.", "SQL не относится к React-компоненту.", "CSS можно подключить отдельно.", "Git-ветки не возвращаются из функций."],
     correctIndex: 0,
     explanation: "React-компонент — функция или класс, который описывает часть интерфейса."
+  },
+  {
+    topic: "react_state",
+    type: "text",
+    theory: "useState дает компоненту память: значение и функцию, которая запускает обновление.",
+    text: "Какой React-хук используют для локального состояния?",
+    options: [],
+    optionExplanations: [],
+    correctAnswers: ["usestate", "useState"],
+    correctIndex: 0,
+    explanation: "Для локального состояния в функциональном компоненте используют useState."
   },
   {
     topic: "react_state",
@@ -195,6 +250,7 @@ export const courseQuestions: SeedQuestion[] = [
   },
   {
     topic: "typescript_types",
+    theory: "unknown безопаснее any: перед использованием TypeScript заставляет проверить тип.",
     text: "Какой тип лучше использовать, когда значение неизвестно и его нужно проверить?",
     options: ["unknown", "any", "never", "void"],
     optionExplanations: ["unknown заставляет сузить тип перед использованием.", "any отключает проверки.", "never означает невозможное значение.", "void обычно для отсутствия return."],
@@ -232,5 +288,85 @@ export const courseQuestions: SeedQuestion[] = [
     optionExplanations: ["typeof сужает тип в условии.", "Это CSS.", "Это команда Git.", "Это HTML-тег."],
     correctIndex: 0,
     explanation: "Type guards помогают безопасно работать с union-типами."
+  },
+  {
+    topic: "html_semantics",
+    text: "Какой тег лучше использовать для самостоятельной статьи или карточки новости?",
+    options: ["<article>", "<span>", "<b>", "<br>"],
+    optionExplanations: ["<article> подходит для независимого смыслового блока.", "<span> не несет семантики.", "<b> только визуально выделяет текст.", "<br> переносит строку."],
+    correctIndex: 0,
+    explanation: "<article> используют для самостоятельного контента: статьи, новости, карточки поста."
+  },
+  {
+    topic: "forms",
+    text: "Зачем связывать <label> с полем формы?",
+    options: ["Чтобы улучшить доступность и кликабельность", "Чтобы включить grid", "Чтобы отправить форму", "Чтобы подключить CSS"],
+    optionExplanations: ["label помогает скринридерам и позволяет кликать по подписи.", "Grid включается CSS.", "Форму отправляет submit.", "CSS подключается через link/style."],
+    correctIndex: 0,
+    explanation: "Связка label + input делает форму понятнее и удобнее."
+  },
+  {
+    topic: "selectors",
+    text: "Как выбрать input с type=\"email\"?",
+    options: ["input[type=\"email\"]", "input.email", "#email[type]", "type.email"],
+    optionExplanations: ["Это атрибутный селектор.", "Так выбирают класс email.", "Так выбирают id=email с любым атрибутом type.", "Такого селектора для input нет."],
+    correctIndex: 0,
+    explanation: "Атрибутные селекторы позволяют выбирать элементы по значениям атрибутов."
+  },
+  {
+    topic: "box_model",
+    text: "Что делает box-sizing: border-box?",
+    options: ["Включает padding и border в width/height", "Удаляет margin", "Делает элемент inline", "Отключает border"],
+    optionExplanations: ["Размер элемента считается вместе с padding и border.", "margin остается отдельно.", "display не меняется.", "border не отключается."],
+    correctIndex: 0,
+    explanation: "border-box упрощает расчет размеров в верстке."
+  },
+  {
+    topic: "flexbox",
+    text: "Как перенести flex-элементы на новую строку?",
+    options: ["flex-wrap: wrap", "flex-direction: new-line", "justify-content: wrap", "display: wrap"],
+    optionExplanations: ["flex-wrap разрешает перенос.", "Такого значения нет.", "justify-content не переносит элементы.", "display: wrap не существует."],
+    correctIndex: 0,
+    explanation: "flex-wrap: wrap нужен, когда элементы не должны сжиматься в одну строку."
+  },
+  {
+    topic: "grid",
+    text: "Как задать три равные колонки в Grid?",
+    options: ["grid-template-columns: repeat(3, 1fr)", "grid-columns: 3", "columns: grid(3)", "display: columns"],
+    optionExplanations: ["repeat(3, 1fr) создает 3 равные колонки.", "Такого свойства нет.", "Такого синтаксиса нет.", "display так не работает."],
+    correctIndex: 0,
+    explanation: "fr распределяет свободное место внутри grid-контейнера."
+  },
+  {
+    topic: "js_functions",
+    text: "Что вернет функция без return?",
+    options: ["undefined", "null", "false", "0"],
+    optionExplanations: ["Без return результат вызова — undefined.", "null не подставляется автоматически.", "false не подставляется автоматически.", "0 не подставляется автоматически."],
+    correctIndex: 0,
+    explanation: "Если return не указан, функция возвращает undefined."
+  },
+  {
+    topic: "js_arrays",
+    text: "Какой метод подходит для фильтрации массива?",
+    options: ["filter", "map", "push", "join"],
+    optionExplanations: ["filter возвращает элементы, прошедшие проверку.", "map преобразует каждый элемент.", "push добавляет элемент.", "join склеивает массив в строку."],
+    correctIndex: 0,
+    explanation: "filter принимает callback и оставляет элементы, для которых callback вернул true."
+  },
+  {
+    topic: "js_dom",
+    text: "Как выбрать первый элемент с классом card?",
+    options: ["document.querySelector('.card')", "document.getClass('.card')", "query('.card')", "document.card"],
+    optionExplanations: ["querySelector возвращает первый подходящий элемент.", "Такого метода нет.", "Глобальной query нет.", "Так свойства DOM не выбирают."],
+    correctIndex: 0,
+    explanation: "querySelector принимает CSS-селектор."
+  },
+  {
+    topic: "react_components",
+    text: "Почему компоненты в React обычно называют с большой буквы?",
+    options: ["Так React отличает их от HTML-тегов", "Так быстрее работает CSS", "Так создается state", "Так подключается Redux"],
+    optionExplanations: ["Компоненты должны начинаться с заглавной буквы.", "CSS от регистра компонента не ускоряется.", "State создается хуками.", "Redux подключается отдельно."],
+    correctIndex: 0,
+    explanation: "Заглавная буква помогает JSX понять, что это компонент, а не обычный DOM-тег."
   }
 ];

@@ -1,4 +1,5 @@
 import { db } from "../storage/db";
+import { courseMap } from "../questions/courseMap";
 import { topTopics } from "./vacancyService";
 
 const DAILY_GOAL = 5;
@@ -15,6 +16,11 @@ export function getProgress(userId: number): {
   activeMistakes: number;
   recommendation: string;
   topics: Array<{ topic: string; total: number; answered: number; mastered: number }>;
+  courseMap: Array<{
+    id: string;
+    title: string;
+    items: Array<{ id: string; title: string; total: number; answered: number; mastered: number; percent: number; status: string }>;
+  }>;
   weakTopics: Array<{ topic: string; mistakes: number; wrongAnswers: number }>;
   top: Array<{ topic: string; weight: number }>;
 } {
@@ -63,9 +69,47 @@ export function getProgress(userId: number): {
     activeMistakes,
     recommendation: getRecommendation({ todaySolved, dueToday, activeMistakes, weakTopics }),
     topics,
+    courseMap: buildCourseMap(userId),
     weakTopics,
     top: topTopics(userId)
   };
+}
+
+function buildCourseMap(userId: number) {
+  const rows = db.prepare(`
+    SELECT
+      q.topic,
+      COUNT(q.id) as total,
+      COUNT(p.question_id) as answered,
+      SUM(CASE WHEN p.box >= 2 THEN 1 ELSE 0 END) as mastered
+    FROM questions q
+    LEFT JOIN question_progress p ON p.question_id = q.id AND p.user_id = ?
+    GROUP BY q.topic
+  `).all(userId) as Array<{ topic: string; total: number; answered: number; mastered: number | null }>;
+
+  const byTopic = new Map(rows.map((row) => [row.topic, row]));
+
+  return courseMap.map((module) => ({
+    id: module.id,
+    title: module.title,
+    items: module.items.map((item) => {
+      const aggregate = item.topics.reduce(
+        (acc, topic) => {
+          const row = byTopic.get(topic);
+          return {
+            total: acc.total + (row?.total ?? 0),
+            answered: acc.answered + (row?.answered ?? 0),
+            mastered: acc.mastered + (row?.mastered ?? 0)
+          };
+        },
+        { total: 0, answered: 0, mastered: 0 }
+      );
+      const percent = aggregate.total === 0 ? 0 : Math.round((aggregate.answered / aggregate.total) * 100);
+      const status = aggregate.answered === 0 ? "locked" : percent >= 100 ? "done" : "active";
+
+      return { ...item, ...aggregate, percent, status };
+    })
+  }));
 }
 
 function getWeakTopics(userId: number): Array<{ topic: string; mistakes: number; wrongAnswers: number }> {

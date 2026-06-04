@@ -16,6 +16,18 @@
         <button id="refreshProgress" class="ghost">Обновить</button>
       </section>
 
+      <section class="account-card">
+        <div>
+          <h2>Синхронизация</h2>
+          <p>Введи один и тот же код на телефоне и компьютере, чтобы прогресс был общим.</p>
+        </div>
+        <div class="account-row">
+          <input id="accessCode" type="text" placeholder="Например: maksim2026" autocomplete="username" />
+          <button id="saveAccessCode" class="secondary">Войти по коду</button>
+        </div>
+        <div id="accountStatus" class="meta"></div>
+      </section>
+
       <section class="layout">
         <aside class="panel">
           <h2>Режим</h2>
@@ -44,6 +56,14 @@
             <button id="nextQuestion" class="primary">Следующий вопрос</button>
           </div>
 
+          <div class="course-card">
+            <div>
+              <h2>Программа обучения</h2>
+              <p>Карта курса: видно, какие блоки уже начаты, закрыты или ждут впереди.</p>
+            </div>
+            <div id="courseMap" class="course-map muted">Загрузка...</div>
+          </div>
+
           <div class="vacancy-card">
             <div>
               <h2>Вакансия или урок</h2>
@@ -61,6 +81,14 @@
             </div>
             <div id="homework" class="homework muted">Загрузка...</div>
             <button id="nextHomework" class="secondary">Другое задание</button>
+          </div>
+
+          <div class="completed-card">
+            <div>
+              <h2>Пройденные темы</h2>
+              <p>Темы с несколькими вопросами и прогрессом по каждой.</p>
+            </div>
+            <div id="completedTopics" class="topic-list muted">Пока нет пройденных тем</div>
           </div>
         </section>
       </section>

@@ -1,12 +1,19 @@
 const state = {
   clientId: localStorage.getItem("trainerClientId"),
+  accessCode: localStorage.getItem("trainerAccessCode") || "",
   mode: "regular",
   question: null,
+  orderSelection: [],
   homeworkIndex: Number(localStorage.getItem("homeworkIndex") || 0)
 };
 
 const els = {
+  accessCode: document.querySelector("#accessCode"),
+  saveAccessCode: document.querySelector("#saveAccessCode"),
+  accountStatus: document.querySelector("#accountStatus"),
   progress: document.querySelector("#progress"),
+  courseMap: document.querySelector("#courseMap"),
+  completedTopics: document.querySelector("#completedTopics"),
   questionMeta: document.querySelector("#questionMeta"),
   questionText: document.querySelector("#questionText"),
   options: document.querySelector("#options"),
@@ -24,14 +31,31 @@ const els = {
 init();
 
 async function init() {
-  const session = await api(`/api/session${state.clientId ? `?clientId=${state.clientId}` : ""}`);
-  state.clientId = session.clientId;
-  localStorage.setItem("trainerClientId", state.clientId);
-
+  els.accessCode.value = state.accessCode;
+  await loadSession();
   bindEvents();
   await loadProgress();
   await loadHomework();
   await loadQuestion();
+}
+
+async function loadSession() {
+  const params = new URLSearchParams();
+  if (state.clientId) params.set("clientId", state.clientId);
+  if (state.accessCode) params.set("accessCode", state.accessCode);
+
+  const session = await api(`/api/session?${params.toString()}`);
+  state.clientId = session.clientId;
+  localStorage.setItem("trainerClientId", state.clientId);
+
+  if (session.accessCode) {
+    state.accessCode = session.accessCode;
+    localStorage.setItem("trainerAccessCode", state.accessCode);
+    els.accessCode.value = state.accessCode;
+    els.accountStatus.textContent = `Аккаунт: ${state.accessCode}. Прогресс синхронизируется между устройствами.`;
+  } else {
+    els.accountStatus.textContent = "Сейчас прогресс привязан только к этому браузеру.";
+  }
 }
 
 function bindEvents() {
@@ -43,6 +67,14 @@ function bindEvents() {
       clearResult();
       await loadQuestion();
     });
+  });
+
+  els.saveAccessCode.addEventListener("click", async () => {
+    state.accessCode = els.accessCode.value.trim();
+    localStorage.setItem("trainerAccessCode", state.accessCode);
+    await loadSession();
+    await loadProgress();
+    await loadQuestion();
   });
 
   els.nextQuestion.addEventListener("click", loadQuestion);
@@ -66,6 +98,7 @@ function bindEvents() {
 
 async function loadQuestion() {
   clearResult();
+  state.orderSelection = [];
   els.options.innerHTML = "";
 
   const data = await api(`/api/question?clientId=${state.clientId}&mode=${state.mode}`);
@@ -83,19 +116,82 @@ async function loadQuestion() {
     ? `Интервью ${data.interview.answered + 1}/${data.interview.total} · `
     : "";
 
-  els.questionMeta.textContent = `${interviewPrefix}${data.question.topicLabel} · сложность ${data.question.difficulty}`;
+  els.questionMeta.innerHTML = `
+    ${escapeHtml(interviewPrefix)}${escapeHtml(data.question.topicLabel)} · сложность ${data.question.difficulty}
+    <button class="mark-button ${data.question.marked ? "marked" : ""}" type="button">
+      ${data.question.marked ? "Отмечен" : "Отметить"}
+    </button>
+  `;
+  els.questionMeta.querySelector(".mark-button").addEventListener("click", toggleMark);
+
   els.questionText.textContent = data.question.text;
+
+  if (data.question.theory) {
+    const theory = document.createElement("div");
+    theory.className = "theory-card";
+    theory.textContent = data.question.theory;
+    els.options.append(theory);
+  }
+
+  if (data.question.type === "text") {
+    renderTextQuestion();
+    return;
+  }
+
+  if (data.question.type === "order") {
+    renderOrderQuestion(data.question.options);
+    return;
+  }
 
   data.question.options.forEach((option, index) => {
     const button = document.createElement("button");
     button.className = "option";
     button.textContent = option;
-    button.addEventListener("click", () => answer(index));
+    button.addEventListener("click", () => answer({ selectedIndex: index }));
     els.options.append(button);
   });
 }
 
-async function answer(selectedIndex) {
+function renderTextQuestion() {
+  const wrapper = document.createElement("div");
+  wrapper.className = "text-answer";
+  wrapper.innerHTML = `
+    <input id="textAnswer" type="text" placeholder="Введи короткий ответ" />
+    <button id="sendTextAnswer" class="primary" type="button">Проверить</button>
+  `;
+  els.options.append(wrapper);
+  wrapper.querySelector("#sendTextAnswer").addEventListener("click", () => {
+    answer({ textAnswer: wrapper.querySelector("#textAnswer").value });
+  });
+}
+
+function renderOrderQuestion(options) {
+  const shuffled = shuffle(options.map((text, index) => ({ text, index })));
+  const picked = document.createElement("div");
+  picked.className = "picked-order";
+  picked.textContent = "Порядок пока пуст";
+  els.options.append(picked);
+
+  shuffled.forEach((option) => {
+    const button = document.createElement("button");
+    button.className = "option";
+    button.textContent = option.text;
+    button.addEventListener("click", () => {
+      state.orderSelection.push(option.index);
+      button.disabled = true;
+      picked.textContent = `Твой порядок: ${state.orderSelection.length}/${options.length}`;
+    });
+    els.options.append(button);
+  });
+
+  const submit = document.createElement("button");
+  submit.className = "primary";
+  submit.textContent = "Проверить порядок";
+  submit.addEventListener("click", () => answer({ selectedOrder: state.orderSelection }));
+  els.options.append(submit);
+}
+
+async function answer(payload) {
   if (!state.question) return;
 
   const data = await api("/api/answer", {
@@ -103,29 +199,40 @@ async function answer(selectedIndex) {
     body: {
       clientId: state.clientId,
       questionId: state.question.id,
-      selectedIndex,
-      mode: state.mode
+      mode: state.mode,
+      ...payload
     }
   });
 
   document.querySelectorAll(".option").forEach((button, index) => {
     button.disabled = true;
-    if (index === data.correctIndex) button.classList.add("correct");
-    if (index === selectedIndex && !data.isCorrect) button.classList.add("wrong");
+    if (state.question.type === "choice" && index === data.correctIndex) button.classList.add("correct");
+    if (state.question.type === "choice" && index === payload.selectedIndex && !data.isCorrect) button.classList.add("wrong");
   });
 
-  const review = data.optionExplanations
-    .map((text, index) => `${state.question.options[index]} - ${text}`)
-    .join("\n");
+  const review = state.question.type === "choice"
+    ? data.optionExplanations.map((text, index) => `${state.question.options[index]} - ${text}`).join("\n")
+    : "Главное — вспомнить принцип, а не угадать кнопку.";
   const material = data.material ? `\n\nМатериал: ${data.material}` : "";
   const interview = data.interview && !data.interview.isActive
     ? `\n\nИнтервью завершено: ${data.interview.correct}/${data.interview.total}`
     : "";
 
   els.result.className = `result ${data.isCorrect ? "" : "bad"}`;
-  els.result.textContent = `${data.isCorrect ? "Правильно" : "Неправильно"}.\nВерный ответ: ${data.correctAnswer}\n${data.explanation}\n\nРазбор вариантов:\n${review}${material}${interview}`;
+  els.result.textContent = `${data.isCorrect ? "Правильно" : "Неправильно"}.\nВерный ответ: ${data.correctAnswer}\n${data.explanation}\n\nРазбор:\n${review}${material}${interview}`;
 
   await loadProgress();
+}
+
+async function toggleMark() {
+  if (!state.question) return;
+  const data = await api("/api/question/mark", {
+    method: "POST",
+    body: { clientId: state.clientId, questionId: state.question.id }
+  });
+
+  state.question.marked = data.marked;
+  await loadQuestion();
 }
 
 async function saveVacancy() {
@@ -146,12 +253,12 @@ async function saveVacancy() {
 async function loadProgress() {
   const progress = await api(`/api/progress?clientId=${state.clientId}`);
   const goalPercent = percent(progress.todaySolved, progress.dailyGoal);
-  const topics = progress.topics.length
-    ? progress.topics.map(renderTopicProgress).join("")
-    : `<div class="empty-state">Пока нет пройденных тем</div>`;
   const weak = progress.weakTopics.length
     ? progress.weakTopics.map(renderWeakTopic).join("")
     : `<div class="empty-state">Слабых тем пока нет</div>`;
+  const completed = progress.topics.length
+    ? progress.topics.map(renderTopicProgress).join("")
+    : `<div class="empty-state">Пока нет пройденных тем</div>`;
 
   els.progress.innerHTML = `
     <div class="progress-hero">
@@ -183,11 +290,34 @@ async function loadProgress() {
       <div class="progress-heading">Слабые темы</div>
       <div class="topic-list">${weak}</div>
     </div>
+  `;
 
-    <div class="progress-block">
-      <div class="progress-heading">Пройденные темы</div>
-      <div class="topic-list">${topics}</div>
-    </div>
+  els.courseMap.innerHTML = progress.courseMap.map(renderCourseModule).join("");
+  els.completedTopics.innerHTML = completed;
+}
+
+function renderCourseModule(module) {
+  return `
+    <section class="course-module">
+      <h3>${escapeHtml(module.title)}</h3>
+      <div class="course-items">
+        ${module.items.map(renderCourseItem).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderCourseItem(item) {
+  const label = item.status === "done" ? "пройдено" : item.status === "active" ? "в процессе" : "впереди";
+  return `
+    <article class="course-item ${item.status}">
+      <div class="progress-row">
+        <span>${escapeHtml(item.title)}</span>
+        <strong>${item.percent}%</strong>
+      </div>
+      <div class="bar"><span style="width:${item.percent}%"></span></div>
+      <small>${label} · ${item.answered}/${item.total} вопросов</small>
+    </article>
   `;
 }
 
@@ -260,6 +390,10 @@ async function api(url, options = {}) {
   }
 
   return response.json();
+}
+
+function shuffle(items) {
+  return [...items].sort(() => Math.random() - 0.5);
 }
 
 function escapeHtml(value) {

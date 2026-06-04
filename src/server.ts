@@ -10,9 +10,11 @@ import {
   getQuestionById,
   Question,
   QuizMode,
+  isQuestionMarked,
   saveAnswer,
   seedQuestionsIfEmpty,
-  startInterview
+  startInterview,
+  toggleQuestionMark
 } from "./services/questionService";
 import { getProgress } from "./services/statsService";
 import { saveVacancy } from "./services/vacancyService";
@@ -57,7 +59,7 @@ process.once("SIGTERM", () => {
 
 async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, url: URL): Promise<void> {
   if (req.method === "GET" && url.pathname === "/api/session") {
-    const session = ensureWebUser(url.searchParams.get("clientId"));
+    const session = ensureWebUser(url.searchParams.get("clientId"), url.searchParams.get("accessCode"));
     sendJson(res, 200, session);
     return;
   }
@@ -74,7 +76,7 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
     const question = getNextQuestion(session.userId, mode);
 
     sendJson(res, 200, {
-      question: question ? publicQuestion(question) : null,
+      question: question ? publicQuestion(question, session.userId) : null,
       interview: mode === "interview" ? getInterviewStatus(session.userId) : null
     });
     return;
@@ -95,27 +97,50 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
     const body = await readJson(req);
     const session = ensureWebUser(body.clientId);
     const questionId = Number(body.questionId);
-    const selectedIndex = Number(body.selectedIndex);
+    const selectedIndex = body.selectedIndex === undefined ? undefined : Number(body.selectedIndex);
     const mode = parseMode(body.mode);
     const question = getQuestionById(questionId);
 
-    if (!question || Number.isNaN(selectedIndex)) {
+    if (!question) {
       sendJson(res, 400, { error: "Bad answer payload" });
       return;
     }
 
-    const isCorrect = saveAnswer(session.userId, question, selectedIndex, mode);
+    const isCorrect = saveAnswer(
+      session.userId,
+      question,
+      {
+        selectedIndex,
+        textAnswer: typeof body.textAnswer === "string" ? body.textAnswer : undefined,
+        selectedOrder: Array.isArray(body.selectedOrder) ? body.selectedOrder.map(Number) : undefined
+      },
+      mode
+    );
     const interview = mode === "interview" ? getInterviewStatus(session.userId) : null;
 
     sendJson(res, 200, {
       isCorrect,
       correctIndex: question.correctIndex,
-      correctAnswer: question.options[question.correctIndex],
+      correctAnswer: getCorrectAnswer(question),
       explanation: question.explanation,
       optionExplanations: question.optionExplanations,
       material: TOPIC_LINKS[question.topic] || null,
       interview
     });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/question/mark") {
+    const body = await readJson(req);
+    const session = ensureWebUser(body.clientId);
+    const questionId = Number(body.questionId);
+
+    if (Number.isNaN(questionId)) {
+      sendJson(res, 400, { error: "Bad mark payload" });
+      return;
+    }
+
+    sendJson(res, 200, { marked: toggleQuestionMark(session.userId, questionId) });
     return;
   }
 
@@ -145,6 +170,18 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
   sendJson(res, 404, { error: "Not found" });
 }
 
+function getCorrectAnswer(question: Question): string {
+  if (question.type === "text") {
+    return question.correctAnswers[0] || "короткий текстовый ответ";
+  }
+
+  if (question.type === "order") {
+    return question.options.join(" → ");
+  }
+
+  return question.options[question.correctIndex];
+}
+
 function parseMode(value: unknown): QuizMode {
   return value === "mistakes" ||
     value === "interview" ||
@@ -158,18 +195,25 @@ function parseMode(value: unknown): QuizMode {
     : "regular";
 }
 
-function publicQuestion(question: Question) {
+function publicQuestion(question: Question, userId: number) {
   return {
     id: question.id,
     topic: question.topic,
+    type: question.type,
     topicLabel: TOPIC_LABELS[question.topic] || question.topic,
+    theory: question.theory,
     text: question.text,
     options: question.options,
-    difficulty: question.difficulty
+    difficulty: question.difficulty,
+    marked: isQuestionMarked(userId, question.id)
   };
 }
 
-function withLabels<T extends { topics?: Array<{ topic: string }>; top?: Array<{ topic: string }>; weakTopics?: Array<{ topic: string }> }>(
+function withLabels<T extends {
+  topics?: Array<{ topic: string }>;
+  top?: Array<{ topic: string }>;
+  weakTopics?: Array<{ topic: string }>;
+}>(
   data: T
 ): T {
   for (const list of [data.topics, data.top, data.weakTopics]) {
