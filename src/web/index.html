@@ -21,9 +21,12 @@
           <h2>Режим</h2>
           <div class="mode-grid">
             <button data-mode="regular" class="mode active">Общий</button>
+            <button data-mode="topic_git" class="mode">Git</button>
             <button data-mode="topic_html" class="mode">HTML</button>
             <button data-mode="topic_css" class="mode">CSS</button>
             <button data-mode="topic_js" class="mode">JS</button>
+            <button data-mode="topic_react" class="mode">React</button>
+            <button data-mode="topic_ts" class="mode">TS</button>
             <button data-mode="mistakes" class="mode">Ошибки</button>
             <button id="startInterview" class="mode">Интервью</button>
           </div>
@@ -49,6 +52,15 @@
             <textarea id="vacancyText" rows="6" placeholder="Урок 40. Рекурсия. Бинарный поиск. Замыкание. Прототипирование. Функция-конструктор"></textarea>
             <button id="saveVacancy" class="secondary">Сохранить и учесть темы</button>
             <div id="vacancyResult" class="result hidden"></div>
+          </div>
+
+          <div class="homework-card">
+            <div>
+              <h2>Мини-ДЗ</h2>
+              <p>Небольшие практические задания по самоконтролю из программы курса.</p>
+            </div>
+            <div id="homework" class="homework muted">Загрузка...</div>
+            <button id="nextHomework" class="secondary">Другое задание</button>
           </div>
         </section>
       </section>

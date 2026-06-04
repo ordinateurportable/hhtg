@@ -1,7 +1,8 @@
 const state = {
   clientId: localStorage.getItem("trainerClientId"),
   mode: "regular",
-  question: null
+  question: null,
+  homeworkIndex: Number(localStorage.getItem("homeworkIndex") || 0)
 };
 
 const els = {
@@ -14,6 +15,8 @@ const els = {
   saveVacancy: document.querySelector("#saveVacancy"),
   vacancyText: document.querySelector("#vacancyText"),
   vacancyResult: document.querySelector("#vacancyResult"),
+  homework: document.querySelector("#homework"),
+  nextHomework: document.querySelector("#nextHomework"),
   startInterview: document.querySelector("#startInterview"),
   refreshProgress: document.querySelector("#refreshProgress")
 };
@@ -27,6 +30,7 @@ async function init() {
 
   bindEvents();
   await loadProgress();
+  await loadHomework();
   await loadQuestion();
 }
 
@@ -53,6 +57,11 @@ function bindEvents() {
   });
 
   els.saveVacancy.addEventListener("click", saveVacancy);
+  els.nextHomework.addEventListener("click", async () => {
+    state.homeworkIndex += 1;
+    localStorage.setItem("homeworkIndex", String(state.homeworkIndex));
+    await loadHomework();
+  });
 }
 
 async function loadQuestion() {
@@ -179,6 +188,21 @@ async function loadProgress() {
       <div class="progress-heading">Пройденные темы</div>
       <div class="topic-list">${topics}</div>
     </div>
+  `;
+}
+
+async function loadHomework() {
+  const data = await api(`/api/homework?index=${state.homeworkIndex}`);
+  const task = data.task;
+
+  els.homework.className = "homework";
+  els.homework.innerHTML = `
+    <div class="homework-topic">${escapeHtml(task.topic)} · ${data.index + 1}/${data.total}</div>
+    <h3>${escapeHtml(task.title)}</h3>
+    <p>${escapeHtml(task.description)}</p>
+    <ul>
+      ${task.checklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+    </ul>
   `;
 }
 

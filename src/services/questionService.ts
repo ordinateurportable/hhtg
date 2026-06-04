@@ -25,7 +25,16 @@ export type Question = {
   explanation: string;
 };
 
-export type QuizMode = "regular" | "mistakes" | "interview" | "topic_html" | "topic_css" | "topic_js";
+export type QuizMode =
+  | "regular"
+  | "mistakes"
+  | "interview"
+  | "topic_git"
+  | "topic_html"
+  | "topic_css"
+  | "topic_js"
+  | "topic_react"
+  | "topic_ts";
 
 export function seedQuestionsIfEmpty(): void {
   const exists = db.prepare("SELECT COUNT(*) as count FROM questions").get() as { count: number };
@@ -142,6 +151,16 @@ function difficultyForTopic(topic: string): number {
     "media_queries",
     "grid",
     "pseudo",
+    "git",
+    "html_meta",
+    "html_tables",
+    "accessibility",
+    "css_text",
+    "css_colors",
+    "css_transitions",
+    "css_backgrounds",
+    "css_fonts",
+    "css_optimization",
     "js_variables",
     "js_types",
     "js_conversion",
@@ -168,9 +187,26 @@ function difficultyForTopic(topic: string): number {
     "js_errors",
     "js_builtin",
     "js_collections",
+    "js_storage",
+    "js_modules",
+    "js_debugging",
     "js_dom",
     "js_events",
-    "js_async"
+    "js_async",
+    "react_components",
+    "react_props",
+    "react_state",
+    "react_effects",
+    "react_lists",
+    "react_forms",
+    "redux_store",
+    "redux_slice",
+    "redux_async",
+    "typescript_types",
+    "typescript_interfaces",
+    "typescript_generics",
+    "typescript_utility_types",
+    "typescript_type_guards"
   ];
 
   const index = order.indexOf(topic);
@@ -290,8 +326,12 @@ function getNewQuestion(userId: number, topics: string[] | null): DbQuestion | u
 }
 
 function topicsForMode(mode: QuizMode): string[] | null {
+  if (mode === "topic_git") {
+    return ["git"];
+  }
+
   if (mode === "topic_html") {
-    return ["html_semantics", "forms", "attributes", "block_inline"];
+    return ["html_semantics", "forms", "attributes", "block_inline", "html_meta", "html_tables", "accessibility"];
   }
 
   if (mode === "topic_css") {
@@ -306,7 +346,13 @@ function topicsForMode(mode: QuizMode): string[] | null {
       "media_queries",
       "pseudo",
       "cascade",
-      "units"
+      "units",
+      "css_text",
+      "css_colors",
+      "css_transitions",
+      "css_backgrounds",
+      "css_fonts",
+      "css_optimization"
     ];
   }
 
@@ -338,9 +384,36 @@ function topicsForMode(mode: QuizMode): string[] | null {
       "js_errors",
       "js_builtin",
       "js_collections",
+      "js_storage",
+      "js_modules",
+      "js_debugging",
       "js_dom",
       "js_events",
       "js_async"
+    ];
+  }
+
+  if (mode === "topic_react") {
+    return [
+      "react_components",
+      "react_props",
+      "react_state",
+      "react_effects",
+      "react_lists",
+      "react_forms",
+      "redux_store",
+      "redux_slice",
+      "redux_async"
+    ];
+  }
+
+  if (mode === "topic_ts") {
+    return [
+      "typescript_types",
+      "typescript_interfaces",
+      "typescript_generics",
+      "typescript_utility_types",
+      "typescript_type_guards"
     ];
   }
 

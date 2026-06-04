@@ -1,3 +1,5 @@
+import { courseQuestions } from "./courseQuestions";
+
 export type SeedQuestion = {
   topic: string;
   text: string;
@@ -420,5 +422,6 @@ export const seedQuestions: SeedQuestion[] = [
     optionExplanations: ["Map хранит пары ключ-значение.", "CSS не связан с Map.", "Ключи и значения могут быть разных типов.", "Promise так не останавливают."],
     correctIndex: 0,
     explanation: "Map удобен, когда ключом может быть не только строка."
-  }
+  },
+  ...courseQuestions
 ];

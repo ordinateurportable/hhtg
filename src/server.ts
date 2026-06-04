@@ -17,6 +17,7 @@ import {
 import { getProgress } from "./services/statsService";
 import { saveVacancy } from "./services/vacancyService";
 import { ensureWebUser } from "./services/webUserService";
+import { homeworkTasks } from "./questions/homework";
 import { TOPIC_LABELS, TOPIC_LINKS } from "./utils/constants";
 
 const port = Number(process.env.PORT || process.env.API_PORT || 3000);
@@ -79,6 +80,17 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
     return;
   }
 
+  if (req.method === "GET" && url.pathname === "/api/homework") {
+    const index = Number(url.searchParams.get("index") || 0);
+    const safeIndex = Number.isFinite(index) ? Math.abs(index) % homeworkTasks.length : 0;
+    sendJson(res, 200, {
+      task: homeworkTasks[safeIndex],
+      total: homeworkTasks.length,
+      index: safeIndex
+    });
+    return;
+  }
+
   if (req.method === "POST" && url.pathname === "/api/answer") {
     const body = await readJson(req);
     const session = ensureWebUser(body.clientId);
@@ -136,9 +148,12 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
 function parseMode(value: unknown): QuizMode {
   return value === "mistakes" ||
     value === "interview" ||
+    value === "topic_git" ||
     value === "topic_html" ||
     value === "topic_css" ||
-    value === "topic_js"
+    value === "topic_js" ||
+    value === "topic_react" ||
+    value === "topic_ts"
     ? value
     : "regular";
 }

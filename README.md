@@ -5,11 +5,12 @@
 ## Возможности
 
 - вопросы по HTML/CSS/JS;
-- режимы `Все темы`, `HTML`, `CSS`, `JavaScript`, `Ошибки`, `Интервью`;
+- режимы `Все темы`, `Git`, `HTML`, `CSS`, `JavaScript`, `React`, `TS`, `Ошибки`, `Интервью`;
 - SRS-повторение как в Anki;
 - движение от простого к сложному;
 - прогресс, streak, дневная цель, точность, слабые темы;
 - визуальные индикаторы прогресса: кольцо точности, карточки метрик, прогресс по темам;
+- мини-ДЗ по блоку самоконтроля из программы курса;
 - ручная вставка текста вакансии или краткого саммари урока;
 - rule-based анализ текста по ключевым словам;
 - хранение прогресса в SQLite на сервере.
@@ -126,6 +127,20 @@ pm2 logs frontend-interview-bot
 - `https://learn.javascript.ru/first-steps`
 - `https://www.my-interview.tech/0000-Навигация/001-Frontend/003-JSCore`
 - `https://metanit.com/web/javascript/` до главы 10
+
+## Вопросы по программе курса
+
+В тренажер добавлены темы из программы обучения и блока самоконтроля:
+
+- Git: status, commit, pull/fetch, `.gitignore`;
+- HTML: структура документа, семантика, формы, таблицы, метатеги, доступность;
+- CSS: box model, позиционирование, flex/grid, transitions, фоны, шрифты, DRY;
+- JavaScript: синтаксис, массивы, объекты, DOM, формы, storage, modules, debugging;
+- React: компоненты, props, state, effects, списки, формы;
+- Redux Toolkit: store, slice, async thunk;
+- TypeScript: базовые типы, interfaces, generics, utility types, type guards.
+
+Мини-ДЗ доступны в отдельной карточке на главной странице приложения.
 
 ## SQLite
 
